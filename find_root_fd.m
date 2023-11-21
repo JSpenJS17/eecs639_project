@@ -13,5 +13,5 @@ function [x] = find_root_fd(f, x)
 end
 
 function [dx] = finite_difference(f, x, h)
-    dx = (f(x + h) - f(x)) / h;
+    dx = (f(x + h) - f(x - h)) / (2*h);
 end

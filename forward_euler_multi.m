@@ -1,4 +1,4 @@
-function [t, y] = eulers_method_multi(h, t_0, t_max, y_0, u)
+function [t, y] = forward_euler_multi(h, t_0, t_max, y_0, u)
     n = length(y_0);
     t = linspace(t_0, t_max, (t_max - t_0) / h);
     y = [y_0 zeros(length(y_0), length(t) - 1)];
