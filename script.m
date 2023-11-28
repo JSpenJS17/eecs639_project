@@ -1,28 +1,28 @@
 %% TESTING FEM
 h = .01;
 t_0 = 0;
-y_0 = 1;
-t_max = 2;
+y_0 = [0 1];
+t_max = 3.5;
 [ys, ts] = FEM(t_0, y_0, h, t_max, @f);
 figure;
-plot(ts, ys, 'k.-');
+plot(ts, ys(:, 1), 'k.-');
 syms x
-g = exp(x);
+g = sin(x);
 figure;
 fplot(g, [t_0 t_max])
 
 %% TESTING BEM
 h = .01;
 t_0 = 0;
-y_0 = 1;
-t_max = 2;
+y_0 = [0 1];
+t_max = 3.5;
 tol = 10^-8;
 maxiter = 50;
 [ys, ts] = BEM(t_0, y_0, h, t_max, @f, maxiter, tol);
 figure;
-plot(ts, ys, 'k.-');
+plot(ts, ys(:, 1), 'k.-');
 syms x
-g = exp(x);
+g = sin(x);
 figure;
 fplot(g, [t_0 t_max])
 
