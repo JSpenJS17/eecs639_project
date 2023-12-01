@@ -40,3 +40,29 @@ syms x
 g = exp(x);
 figure;
 fplot(g, [t_0 t_max])
+
+
+% TESTING forward_euler_multi
+h = 0.025;
+t_0 = 0;
+t_max = 3.5;
+y_0 = [0; 1];
+
+[t, y] = forward_euler_multi(h, t_0, t_max, y_0, @u);
+figure;
+plot(t, y(2, :));
+
+% TESTING backward_euler_multi
+h = 0.025;
+t_0 = 0;
+t_max = 3.5;
+y_0 = [0; 1];
+
+[t, y] = backward_euler_multi(h, t_0, t_max, y_0, @u);
+figure;
+plot(t, y(2, :));
+
+% y'' = -y
+function [z] = u(t, y)
+    z = -y(1);
+end
