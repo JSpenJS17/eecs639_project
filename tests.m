@@ -2,6 +2,7 @@ hold on;
 clf;
 
 %% y'' = -y with y(0) = 0, y'(0) = 1
+% solution is y(t) = sin(t)
 %
 % u1 = y
 % u2 = y'
