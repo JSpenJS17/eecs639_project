@@ -1,15 +1,28 @@
-function [ys, ts] = BEM(t_0, y_0, h, t_max, func, maxiter, tol)
+function [ys, ts] = BEM(t_0, y_0, h, t_max, f)
+    n = length(y_0);
     ts = (t_0:h:t_max)';
-    ys = [y_0;zeros(length(ts)-1, length(y_0))];
+    ys = zeros(n, length(ts));
+    ys(:, 1) = y_0;
     
     for k = 1:length(ts)-1
         i = 0;
-        % do fixed point iteration until the norm of the difference between
-        % the current and the previous iteration is smaller than the
-        % tolerance or the maximum number of iterations is reached
-        while abs(norm(ys(k, :) + h*func(ts(k+1), ys(k+1, :) - ys(k+1, :)))) > tol && i < maxiter
-            ys(k+1, :) = ys(k, :) + h*func(ts(k+1), ys(k+1, :));
-            i = i + 1;
-        end
+        u = @(t, y) ys(:, k) + h*f(ts(k+1), ys(:, k+1));
+        %this doesn't work, just needs the jacobian bit
+        ys(:, k+1) = find_root_fd(u, ys(k));
     end
+end
+
+function [x] = find_root_fd(f, x)
+    tol = 1e-8;
+    max_iters = 100;
+    k = 0;
+
+    while norm(abs(f(x))) > tol && k < max_iters
+        x = x - (f(x) / finite_difference(f, x, tol));
+        k = k + 1;
+    end
+end
+
+function [dx] = finite_difference(f, x, h)
+    dx = (f(x + h) - f(x - h)) / (2*h);
 end

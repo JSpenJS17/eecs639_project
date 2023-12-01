@@ -1,7 +1,7 @@
 % Forward Eulers method
 function [ys, ts] = FEM(t_0, y_0, h, t_max, f)
     n = length(y_0);
-    ts = t_0:h:t_max;
+    ts = (t_0:h:t_max)';
     ys = zeros(n, length(ts));
     ys(:, 1) = y_0;
 
