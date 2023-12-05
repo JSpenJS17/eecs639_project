@@ -5,11 +5,11 @@ function [ys, ts] = BEM(t_0, y_0, h, t_max, f, J)
     ys(:, 1) = y_0;
     tol = 1e-6;
 
-    for k = 1:n
+    for k = 1:length(ts)-1
         % use the previos value of y as the guess for the next one
         ys(:, k+1) = ys(:, k);
-        ys(:, k+1) = newtons_method(ts(k+1), ys(:, k+1), h, tol, f, J);
-        % ys(:, k+1) = fixed_point(ts(k+1), ys(:, k+1), h, tol, f);
+        % ys(:, k+1) = newtons_method(ts(k+1), ys(:, k+1), h, tol, f, J);
+        ys(:, k+1) = fixed_point(ts(k+1), ys(:, k+1), h, tol, f);
     end
 end
 
