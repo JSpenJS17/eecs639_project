@@ -38,4 +38,3 @@ function [y_next] = fixed_point(t, y0, h, tol, f)
         iters = iters + 1;
     end
 end
-
