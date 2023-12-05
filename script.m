@@ -54,17 +54,17 @@ function [] = plot_test(t_0, y_0, h, t_max, f, test_name, plot_exact, exact_soln
     
     % (HARLAN) %
     % run BEM,  disabled until root finding is finished
-    %[ys, ts] = BEM(t_0, y_0, h, t_max, f);
-    %subplot(3,2,2);
-    %plot(ts, ys(1, :), 'g.-');
-    %title('BEM of ' + test_name)
+    [ys, ts] = BEM(t_0, y_0, h, t_max, f);
+    subplot(3,2,2);
+    plot(ts, ys(1, :), 'g.-');
+    title('BEM of ' + test_name)
   
     % (PIERCE) %
     % run trap on electric circuit, disabled until fixed
-    %[ys, ts] = trap(t_0, y_0, h, t_max, f);
-    %subplot(3,2,3);
-    %plot(ts, ys(1, :), 'b.-');
-    %title('Trap of ' + test_name)
+    [ys, ts] = trap(t_0, y_0, h, t_max, f);
+    subplot(3,2,3);
+    plot(ts, ys(1, :), 'b.-');
+    title('Trap of ' + test_name)
     
     % run RK4
     [ys, ts] = RK4(t_0, y_0, h, t_max, f);
