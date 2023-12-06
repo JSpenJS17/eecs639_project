@@ -3,8 +3,9 @@ hold on;
 
 h = .01;
 t_0 = 0;
-t_max = pi*2;
+t_max = 5;
 
+%% reaction parameters
 a = 0.06;
 b = 0.02;
 k0 = 1.0;
@@ -16,8 +17,18 @@ f = 1.0;
 
 y_0 = [0.0; 0.; 0.023];
 
-[ts, ys] = ode45(dy, [0 1], y_0);
+dy = @(t, y) [
+    ( k3*a*y(2) - k2*y(1)*y(2) + k5*a*y(1) -2*k4*y(1).^2);
+    (-k3*a*y(2) - k2*y(1)*y(2) + 0.5*f*k0*b*y(3));
+    (2*k5*a*y(1) - k0*b*y(3))
+];
 
-% plot(ts, ys(:, 1), 'green');
+[ts, ys] = ode45(dy, [t_0 t_max], y_0);
+
+% plot X(t) with respect to t
 plot(ts, ys(:,1), 'red');
+
+% plot concentration of Y with respect to X
 % plot(ys(:,1), ys(:,2), 'green');
+
+
