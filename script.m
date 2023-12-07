@@ -6,11 +6,9 @@ h = .01;
 t_0 = 0;
 y_0 = [.2; 0];
 t_max = 5;
-syms t
-y = .2*cos(8*t);
 
 %test the different IVP methods
-plot_test(t_0, y_0, h, t_max, @f, "Vibrating Spring", true, y)
+plot_test(t_0, y_0, h, t_max, @f, "Vibrating Spring")
 
 %% TEST ELECTRIC CIRCUIT
 % exact solution: (4/697)*((exp(-20)*t/3)*(-63*cos(15*t)-116*sin(15*t)) + (21*cos(10*t) + 16*sin(10*t)))
@@ -20,12 +18,20 @@ h = .01;
 t_0 = 0;
 y_0 = [0; 0];
 t_max = 5;
-syms t
-y = (4/697)*((exp(-20)*t/3)*(-63*cos(15*t)-116*sin(15*t)) + (21*cos(10*t) + 16*sin(10*t)));
 
 %test the different IVP methods
-plot_test(t_0, y_0, h, t_max, @u, "Electric Circuit", true, y)
+plot_test(t_0, y_0, h, t_max, @u, "Electric Circuit")
 
+%% DO OREGONATOR
+
+% define starting conditions from project description
+h = .01;
+t_0 = 0;
+y_0 = [0; 0.23; 0.0];
+t_max = 25;
+
+%test the different IVP methods
+plot_test(t_0, y_0, h, t_max, @o, "Oregonator")
 
 %% FUNCTION DEFINITIONS
 % define f for vibrating spring
@@ -42,8 +48,32 @@ function [z] = u(t, y)
     z = [y(2); 100*cos(10*t) - R*y(2) - (1/C)*y(1)];
 end
 
+% define o for oregonator
+function [u] = o(t, y)
+    % reaction parameters
+    A = 0.06;
+    B = 0.02;
+    f = 1.0;
+    k3 = 1.0;
+    k2 = 2.4e5;
+    k5 = 1.28;
+    k4 = 3.0e3;
+    k0 = 33.6;
+
+    % X, Y, and Z
+    X = y(1);
+    Y = y(2);
+    Z = y(3);
+
+    u = [
+            ( k3*A*Y - k2*X*Y + k5*A*X);
+            (-k3*A*Y - k2*X*Y + .5*f*k0*B*Z );
+            ( 2*k5*A*X - k0*B*Z )
+        ];
+end
+
 % define helper function to run solvers and plot results
-function [] = plot_test(t_0, y_0, h, t_max, f, test_name, plot_exact, exact_soln)
+function [] = plot_test(t_0, y_0, h, t_max, f, test_name)
     figure;
 
     % run FEM
@@ -52,14 +82,12 @@ function [] = plot_test(t_0, y_0, h, t_max, f, test_name, plot_exact, exact_soln
     plot(ts, ys(1, :), 'r.-');
     title('FEM of ' + test_name)
     
-    % (HARLAN) %
     % run BEM,  disabled until root finding is finished
     [ys, ts] = BEM(t_0, y_0, h, t_max, f);
     subplot(3,2,2);
     plot(ts, ys(1, :), 'g.-');
     title('BEM of ' + test_name)
   
-    % (PIERCE) %
     % run trap on electric circuit, disabled until fixed
     [ys, ts] = trap(t_0, y_0, h, t_max, f);
     subplot(3,2,3);
@@ -77,12 +105,5 @@ function [] = plot_test(t_0, y_0, h, t_max, f, test_name, plot_exact, exact_soln
     subplot(3,2,5);
     plot(ts, ys(1, :), 'k.-');
     title('PC of ' + test_name)
-    
-    %plot exact solution (optional)
-    if plot_exact
-        subplot(3,2,6);
-        fplot(exact_soln, [t_0 t_max], 'c.-')
-        title('Exact Solution of ' + test_name)
-    end
 
 end
