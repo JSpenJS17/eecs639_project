@@ -8,8 +8,7 @@ function [ys, ts] = BEM(t_0, y_0, h, t_max, f, J)
     for k = 1:length(ts)-1
         % use the previous value of y as the guess for the next one
         ys(:, k+1) = ys(:, k);
-        % ys(:, k+1) = newtons_method(ts(k+1), ys(:, k+1), h, tol, f, J);
-        ys(:, k+1) = fixed_point(ts(k+1), ys(:, k+1), h, tol, f);
+        ys(:, k+1) = newtons_method(ts(k+1), ys(:, k+1), h, tol, f, J);
     end
 end
 
@@ -18,23 +17,27 @@ function [y_next] = newtons_method(t, y0, h, tol, f, J)
     iters = 0;
     y_next = y0;
 
-    while norm(y_next - (y0 + h*f(t, y_next)), inf) > tol && iters < max_iters
+    error = norm(y_next - (y0 + h*f(t, y_next)), inf);
+
+    while error > tol && iters < max_iters
+        max_correction_iters = 100;
+        correction_iters = 0;
+        current_y = y_next;
         [L, U, P] = lu(J(t, y_next));
         v = L\P'*-(y_next - y0 - h*f(t, y_next));
         s_k = U\v;
 
         y_next = y_next + s_k;
         iters = iters + 1;
-    end
-end
+        current_error = norm(y_next - (y0 + h*f(t, y_next)), inf);
+        while current_error > error && correction_iters < max_correction_iters
+            % redo step as fixed point iter
+            y_next = current_y;
+            y_next = y0 + h*f(t, y_next);
+            current_error = norm(y_next - (y0 + h*f(t, y_next)), inf);
+            correction_iters = correction_iters + 1;
+        end
 
-function [y_next] = fixed_point(t, y0, h, tol, f)
-    max_iters = 100;
-    iters = 0;
-    y_next = y0;
-
-    while norm(y_next - (y0 + h*f(t, y_next)), inf) > tol && iters < max_iters
-        y_next = y0 + h*f(t, y_next);
-        iters = iters + 1;
+        error = current_error;
     end
 end
