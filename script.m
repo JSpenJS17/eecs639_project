@@ -40,12 +40,30 @@ function [z] = f(t, y)
     z = [y(2); -64*y(1)];
 end
 
+% define Jacobian of f for BEM
+function [J] = Jf(t, y)
+    J = [
+        0 1;
+        -64 0
+    ];
+end
+
 % define u for electric circuit
 function [z] = u(t, y)
     % z = [u2; E(t) - RQ' - (1/C)Q
     R = 40;
     C = 16*10^-4;
     z = [y(2); 100*cos(10*t) - R*y(2) - (1/C)*y(1)];
+end
+
+% define Jacobian of u for BEM
+function [J] = Ju(t, y)
+    R = 40;
+    C = 16*10^-4;
+    J = [
+        0 1;
+        -1/C -R
+    ];
 end
 
 % define o for oregonator
@@ -70,6 +88,31 @@ function [u] = o(t, y)
             (-k3*A*Y - k2*X*Y + .5*f*k0*B*Z );
             ( 2*k5*A*X - k0*B*Z )
         ];
+end
+
+% define Jacobian of o for BEM
+function [J] = Jo(t, y)
+    % reaction parameters
+    a = 0.06;
+    b = 0.02;
+
+    kc = 1.0;
+    k2 = 2.4E+06;
+    k3 = 1.28;
+    k4 = 3.0E+03;
+    k5 = 33.6;
+
+    %calculated scaling
+    eta1 = kc * b / k5 / a;
+    eta2 = 2.0 * kc * k4 * b / k2 / k5 / a;
+    q = 2.0 * k3 * k4 / k2 / k5;
+    f = 1.0;
+
+    J = [
+        ((-y(2) + 1 - 2.*y(1))/eta1) (q - y(1))/eta1    0;
+        -y(2)/eta2                   (-q - y(1))/eta2   f/eta2;
+        1                            0                  -1
+    ];
 end
 
 % define helper function to run solvers and plot results
