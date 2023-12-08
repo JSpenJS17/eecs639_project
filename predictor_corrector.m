@@ -1,16 +1,31 @@
+%% Predictor-Corrector Method
 % Predictor-corrector method using AB4 as a predictor
 % and AM4 as a corrector.
+%
+% Inputs:
+% t_0: starting value for `t`
+% y_0: vector of initial starting conditions for `y`
+% h: step size
+% t_max: final value of `t`
+% f: ODE as a system of first-order equations
+%
+% Outputs:
+% ys: vector of the predicted values of the vector y with the ODE 
+% ts: vector of time steps
 function [ys, ts] = predictor_corrector(t_0, y_0, h, t_max, f)
     n = length(y_0);
     ts = t_0:h:t_max;
     ys = zeros(n, length(ts));
     ys(:, 1) = y_0;
+    % calculate intial values using RK4 steps
     ys(:, 2) = RK4_step(ts(1), ys(:, 1), h, f);
     ys(:, 3) = RK4_step(ts(2), ys(:, 2), h, f);
     ys(:, 4) = RK4_step(ts(3), ys(:, 3), h, f);
 
     for k = 4:length(ts)-1
+        % perform a prediction step
         ys(:, k+1) = AB4_predictor(k, ts, ys, h, f);
+        % use result of prediction step as input to a correction step
         ys(:, k+1) = AM4_corrector(k, ts, ys, h, f);
     end
 end
