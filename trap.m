@@ -1,3 +1,17 @@
+%% Trapezoidal Method
+% computes the step y_k+1 = y_k + h(f(t_k+1, y_k+1) + f(t_k, y_k))/2 using fixed point iteration
+%
+% Inputs:
+% t_0: starting value for `t`
+% y_0: vector of initial starting conditions for `y`
+% h: step size
+% t_max: final value of `t`
+% f: ODE as a system of first-order equations
+% J: Jacobian of `f`
+%
+% Outputs:
+% ys: vector of the predicted values of the vector y with the ODE 
+% ts: vector of time steps
 function [ys, ts] = trap(t_0, y_0, h, t_max, f, J)
     n = length(y_0);
     ts = t_0:h:t_max;
@@ -16,6 +30,7 @@ end
 function [y_next] = fixed_point(t_k, y_k, t, y0, h, tol, f)
     max_iters = 100;
     iters = 0;
+    % calculate the result of doing a forward euler step
     fem_value = h*f(t_k, y_k);
     y_next = fem_value;
 

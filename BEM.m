@@ -1,3 +1,18 @@
+%% Backward Euler's Method
+% solves the step y_k+1 = y_k + hf(t_k+1, y_k+1) using both
+% Newton's method and fixed-point iteration when necessary.
+%
+% Inputs:
+% t_0: starting value for `t`
+% y_0: vector of initial starting conditions for `y`
+% h: step size
+% t_max: final value of `t`
+% f: ODE as a system of first-order equations
+% J: Jacobian of `f`
+%
+% Outputs:
+% ys: vector of the predicted values of the vector y with the ODE 
+% ts: vector of time steps
 function [ys, ts] = BEM(t_0, y_0, h, t_max, f, J)
     n = length(y_0);
     ts = t_0:h:t_max;
@@ -29,6 +44,9 @@ function [y_next] = newtons_method(t, y0, h, tol, f, J)
         y_next = y_next + s_k;
         iters = iters + 1;
         current_error = norm(y_next - (y0 + h*f(t, y_next)), inf);
+
+        % if error increases due to a newton step rather than decreases, run fixed point
+        % until error is back to within tolerance.
         while current_error > error && correction_iters < max_correction_iters
             % perform fixed point iter until error is reduced
             y_next = y0 + h*f(t, y_next);
