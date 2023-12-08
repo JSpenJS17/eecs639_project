@@ -22,7 +22,6 @@ function [y_next] = newtons_method(t, y0, h, tol, f, J)
     while error > tol && iters < max_iters
         max_correction_iters = 100;
         correction_iters = 0;
-        current_y = y_next;
         [L, U, P] = lu(J(t, y_next));
         v = L\P'*-(y_next - y0 - h*f(t, y_next));
         s_k = U\v;
@@ -31,8 +30,7 @@ function [y_next] = newtons_method(t, y0, h, tol, f, J)
         iters = iters + 1;
         current_error = norm(y_next - (y0 + h*f(t, y_next)), inf);
         while current_error > error && correction_iters < max_correction_iters
-            % redo step as fixed point iter
-            y_next = current_y;
+            % perform fixed point iter until error is reduced
             y_next = y0 + h*f(t, y_next);
             current_error = norm(y_next - (y0 + h*f(t, y_next)), inf);
             correction_iters = correction_iters + 1;
